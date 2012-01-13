@@ -1,0 +1,13 @@
+
+// shell variable to run import locally
+# export PYTHONPATH=. 
+
+// upload venues locally
+# appcfg.py upload_data --config_file=venue_loader.py --filename=bn_venues.csv --kind=Venue --url=http://localhost:8080/remote_api .
+
+// upload venues to production
+# appcfg.py upload_data --config_file=venue_loader.py --filename=bn_venues.csv --kind=Venue .
+
+// upload app to production
+# appcfg.py update .
+

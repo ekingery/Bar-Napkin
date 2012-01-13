@@ -1,0 +1,53 @@
+K 25
+svn:wc:ra_dav:version-url
+V 49
+/ek_code/!svn/ver/1166/trunk/BarNapkin/bn-devtest
+END
+venue_loader.py
+K 25
+svn:wc:ra_dav:version-url
+V 65
+/ek_code/!svn/ver/1166/trunk/BarNapkin/bn-devtest/venue_loader.py
+END
+app.yaml
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/ek_code/!svn/ver/1166/trunk/BarNapkin/bn-devtest/app.yaml
+END
+commands
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/ek_code/!svn/ver/1166/trunk/BarNapkin/bn-devtest/commands
+END
+index.yaml
+K 25
+svn:wc:ra_dav:version-url
+V 60
+/ek_code/!svn/ver/1166/trunk/BarNapkin/bn-devtest/index.yaml
+END
+models.py
+K 25
+svn:wc:ra_dav:version-url
+V 59
+/ek_code/!svn/ver/1166/trunk/BarNapkin/bn-devtest/models.py
+END
+get_nearby_venues.py
+K 25
+svn:wc:ra_dav:version-url
+V 70
+/ek_code/!svn/ver/1166/trunk/BarNapkin/bn-devtest/get_nearby_venues.py
+END
+bn_venues.csv
+K 25
+svn:wc:ra_dav:version-url
+V 63
+/ek_code/!svn/ver/1166/trunk/BarNapkin/bn-devtest/bn_venues.csv
+END
+index.py
+K 25
+svn:wc:ra_dav:version-url
+V 58
+/ek_code/!svn/ver/1166/trunk/BarNapkin/bn-devtest/index.py
+END
