@@ -49,7 +49,7 @@ class GeoModel(db.Model):
     location: A db.GeoPt that defines the single geographic point
         associated with this entity.
   """
-  location = db.GeoPtProperty(required=True)
+  location = db.GeoPtProperty()
   location_geocells = db.StringListProperty()
 
   def update_location(self):
@@ -58,10 +58,13 @@ class GeoModel(db.Model):
     Updates the underlying geocell properties of the entity to match the
     entity's location property. A put() must occur after this call to save
     the changes to App Engine."""
-    max_res_geocell = geocell.compute(self.location)
-    self.location_geocells = [max_res_geocell[:res]
-                              for res in
-                              range(1, geocell.MAX_GEOCELL_RESOLUTION + 1)]
+    if self.location:
+      max_res_geocell = geocell.compute(self.location)
+      self.location_geocells = [max_res_geocell[:res]
+                                for res in
+                                range(1, geocell.MAX_GEOCELL_RESOLUTION + 1)]
+    else:
+      self.location_geocells = []
 
   @staticmethod
   def bounding_box_fetch(query, bbox, max_results=1000,
@@ -98,44 +101,19 @@ class GeoModel(db.Model):
     query_geocells = geocell.best_bbox_search_cells(bbox, cost_function)
 
     if query_geocells:
-      if query._Query__orderings:
-        # NOTE(romannurik): since 'IN' queries seem boken in App Engine,
-        # manually search each geocell and then merge results in-place
-        cell_results = [copy.deepcopy(query)
-            .filter('location_geocells =', search_cell)
-            .fetch(max_results) for search_cell in query_geocells]
-
-        # Manual in-memory sort on the query's defined ordering.
-        query_orderings = query._Query__orderings or []
-        def _ordering_fn(ent1, ent2):
-          for prop, direction in query_orderings:
-            prop_cmp = cmp(getattr(ent1, prop), getattr(ent2, prop))
-            if prop_cmp != 0:
-              return prop_cmp if direction == 1 else -prop_cmp
-
-          return -1  # Default ent1 < ent2.
-
-        # Duplicates aren't possible so don't provide a dup_fn.
-        util.merge_in_place(cmp_fn=_ordering_fn, *cell_results)
-        results = cell_results[0][:max_results]
-      else:
-        # NOTE: We can't pass in max_results because of non-uniformity of the
-        # search.
-        results = (query
-            .filter('location_geocells IN', query_geocells)
-            .fetch(1000))[:max_results]
-    else:
-      results = []
+      for entity in query.filter('location_geocells IN', query_geocells):
+        if len(results) == max_results:
+          break
+        if (entity.location.lat >= bbox.south and
+            entity.location.lat <= bbox.north and
+            entity.location.lon >= bbox.west and
+            entity.location.lon <= bbox.east):
+          results.append(entity)
 
     if DEBUG:
       logging.info('bbox query looked in %d geocells' % len(query_geocells))
 
-    # In-memory filter.
-    return [entity for entity in results if
-        entity.location.lat >= bbox.south and
-        entity.location.lat <= bbox.north and
-        entity.location.lon >= bbox.west and
-        entity.location.lon <= bbox.east]
+    return results
 
   @staticmethod
   def proximity_fetch(query, center, max_results=10, max_distance=0):
